@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: trackflow-frontend
+    runtime: node
+    plan: free
+    region: oregon # la misma región del backend, para acortar la latencia entre ambos
+    branch: main
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      # Se aplica durante el build: es la que decide contra qué backend consulta el sitio.
+      - key: NEXT_PUBLIC_API_URL
+        value: https://trackflow-5enb.onrender.com
+      - key: NODE_VERSION
+        value: "22"
