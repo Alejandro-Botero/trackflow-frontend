@@ -23,6 +23,7 @@ import { Select } from "@/components/ui/Select";
 import { Aviso } from "@/components/ui/Aviso";
 import { CampoForm } from "@/components/CampoForm";
 import { ComboboxCiudad } from "@/components/ComboboxCiudad";
+import { CodigoBarras } from "@/components/CodigoBarras";
 import { CopiarNumero } from "@/components/CopiarNumero";
 import { EstadoBadge } from "@/components/EstadoBadge";
 
@@ -96,8 +97,10 @@ function SeccionPersona({
   const ayudaDocumento = TIPOS_DOCUMENTO.find((tipo) => tipo.valor === datos.tipoDocumento)?.ayuda;
 
   return (
-    <div className="marco marco-hoja p-6 flex flex-col gap-4">
-      <h2 className="t-seccion">{titulo}</h2>
+    <section className="hoja hoja-copia flex flex-col gap-5 p-6 sm:p-8">
+      <div className="border-b border-linea pb-3">
+        <h2 className="t-seccion text-marina">{titulo}</h2>
+      </div>
 
       <CampoForm
         id={`${prefijo}-nombreCompleto`}
@@ -115,12 +118,12 @@ function SeccionPersona({
         )}
       </CampoForm>
 
-      <div className="grid grid-cols-2 gap-4">
+      {/* items-end alinea los dos controles aunque solo uno lleve línea de ayuda. */}
+      <div className="grid grid-cols-2 items-end gap-4">
         <CampoForm
           id={`${prefijo}-tipoDocumento`}
           etiqueta="Tipo de documento"
           obligatorio
-          ayuda={ayudaDocumento}
           error={errorDeCampo(`${prefijo}.tipoDocumento`)}
         >
           {(campo) => (
@@ -144,6 +147,7 @@ function SeccionPersona({
           id={`${prefijo}-numeroDocumento`}
           etiqueta="Número de documento"
           obligatorio
+          ayuda={ayudaDocumento}
           error={errorDeCampo(`${prefijo}.numeroDocumento`)}
         >
           {(campo) => (
@@ -197,7 +201,7 @@ function SeccionPersona({
         onChange={(ciudad) => onCambiar({ ciudadId: ciudad ? ciudad.id : null })}
         error={errorDeCampo(`${prefijo}.ciudadId`)}
       />
-    </div>
+    </section>
   );
 }
 
@@ -297,15 +301,24 @@ export function FormularioEnvio() {
 
   if (resultado) {
     return (
-      <div className="marco marco-hoja p-6 flex flex-col gap-4" aria-live="polite">
-        <h2 className="t-seccion">Envío registrado</h2>
-        <p>
-          Número de guía: <span className="guia">{resultado.trackingNumber}</span>
-        </p>
-        <div className="flex flex-wrap items-center gap-4">
-          <CopiarNumero valor={resultado.trackingNumber} />
-          <EstadoBadge estado="REGISTERED" />
+      <div className="hoja flex flex-col gap-6 p-6 sm:p-8" aria-live="polite">
+        <div className="flex flex-wrap items-start justify-between gap-x-10 gap-y-6">
+          <div className="flex flex-col gap-2">
+            <p className="rotulo">Envío registrado · número de guía</p>
+            <p className="guia text-2xl font-semibold text-marina">{resultado.trackingNumber}</p>
+            <div className="mt-2">
+              <EstadoBadge estado="REGISTERED" />
+            </div>
+          </div>
+          <div className="w-full sm:w-64">
+            <CodigoBarras valor={resultado.trackingNumber} className="h-12 text-marina" />
+            <p className="rotulo mt-2 text-center">{resultado.trackingNumber}</p>
+          </div>
         </div>
+
+        <div className="perforado" aria-hidden="true" />
+
+        <CopiarNumero valor={resultado.trackingNumber} />
 
         {sondeando && (
           <Aviso tono="info">Registrado. El sistema está procesando el movimiento.</Aviso>
@@ -320,11 +333,14 @@ export function FormularioEnvio() {
           </Aviso>
         )}
 
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-linea pt-6">
           <Boton variante="accion" onClick={limpiarFormulario}>
             Registrar otro envío
           </Boton>
-          <Link href={`/rastreo/${resultado.trackingNumber}`} className="t-dato underline">
+          <Link
+            href={`/rastreo/${resultado.trackingNumber}`}
+            className="text-sm font-semibold text-marina underline decoration-linea-fuerte underline-offset-4 hover:decoration-marina"
+          >
             Rastrear este envío
           </Link>
         </div>
@@ -342,7 +358,7 @@ export function FormularioEnvio() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <SeccionPersona
           titulo="Remitente"
           prefijo="remitente"
@@ -359,8 +375,10 @@ export function FormularioEnvio() {
         />
       </div>
 
-      <div className="marco marco-hoja p-6 flex flex-col gap-4">
-        <h2 className="t-seccion">Paquete</h2>
+      <section className="hoja hoja-copia flex flex-col gap-5 p-6 sm:p-8">
+        <div className="border-b border-linea pb-3">
+          <h2 className="t-seccion text-marina">Paquete</h2>
+        </div>
         <CampoForm
           id="descripcion"
           etiqueta="Descripción del contenido"
@@ -376,12 +394,15 @@ export function FormularioEnvio() {
             />
           )}
         </CampoForm>
-      </div>
+      </section>
 
-      <div>
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-linea pt-6">
         <Boton type="submit" variante="accion" cargando={enviando}>
           Registrar envío
         </Boton>
+        <p className="t-apoyo max-w-[45ch]">
+          El número de guía se genera al registrar y aparece en esta misma pantalla.
+        </p>
       </div>
     </form>
   );

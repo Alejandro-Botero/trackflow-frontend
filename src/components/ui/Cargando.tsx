@@ -10,7 +10,10 @@ export function Cargando({
   tamano?: "sm" | "lg";
 }) {
   return (
-    <div role="status" className={cn("flex items-center gap-2 text-tinta-suave", tamano === "lg" && "t-dato")}>
+    <div
+      role="status"
+      className={cn("flex items-center gap-2.5 text-tinta-suave", tamano === "lg" && "t-dato text-marina")}
+    >
       <Loader2 className={cn("animate-spin", tamano === "lg" ? "h-6 w-6" : "h-4 w-4")} aria-hidden="true" />
       <span>{texto}</span>
     </div>

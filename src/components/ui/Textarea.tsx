@@ -7,10 +7,11 @@ export function Textarea({ className, rows = 4, ...resto }: TextareaHTMLAttribut
     <textarea
       rows={rows}
       className={cn(
-        "min-h-11 w-full rounded-none border border-linea bg-hoja px-3 py-2 text-base text-tinta",
+        "w-full rounded-none border border-linea-control bg-hoja px-3.5 py-2.5 text-base text-tinta",
+        "hover:border-marina",
         "placeholder:text-tinta-suave",
-        "aria-invalid:border-error",
-        "disabled:cursor-not-allowed disabled:bg-papel disabled:text-tinta-suave",
+        "aria-invalid:border-error aria-invalid:bg-error-fondo",
+        "disabled:cursor-not-allowed disabled:border-linea disabled:bg-papel disabled:text-tinta-suave",
         className,
       )}
       {...resto}

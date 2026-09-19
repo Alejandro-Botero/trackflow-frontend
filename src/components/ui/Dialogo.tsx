@@ -42,9 +42,9 @@ export function Dialogo({
         onCerrar();
       }}
       onClose={onCerrar}
-      className="marco marco-hoja w-full max-w-lg rounded-none p-0 backdrop:bg-tinta/50"
+      className="w-full max-w-lg rounded-none border border-marina bg-hoja p-0 shadow-[0_18px_48px_rgba(16,20,24,0.22)] backdrop:bg-tinta/55"
     >
-      <div className="flex items-center justify-between gap-4 border-b border-linea p-4">
+      <div className="flex items-center justify-between gap-4 border-b border-linea px-5 py-4">
         <h2 id={idTitulo} className="t-seccion text-marina">
           {titulo}
         </h2>
@@ -52,13 +52,15 @@ export function Dialogo({
           type="button"
           onClick={onCerrar}
           aria-label="Cerrar"
-          className="flex min-h-11 min-w-11 shrink-0 items-center justify-center text-marina"
+          className="-mr-2 flex min-h-11 min-w-11 shrink-0 items-center justify-center text-tinta-suave hover:text-marina"
         >
           <X className="h-5 w-5" aria-hidden="true" />
         </button>
       </div>
-      <div className="p-4">{children}</div>
-      <div className="flex justify-end gap-2 border-t border-linea p-4">{pie}</div>
+      <div className="px-5 py-5">{children}</div>
+      <div className="flex flex-wrap justify-end gap-3 border-t border-linea bg-papel px-5 py-4">
+        {pie}
+      </div>
     </dialog>
   );
 }

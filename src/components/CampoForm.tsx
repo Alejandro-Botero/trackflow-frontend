@@ -29,8 +29,8 @@ export function CampoForm({
   const describedBy = [idAyuda, idError].filter(Boolean).join(" ") || undefined;
 
   return (
-    <div className="flex flex-col gap-1">
-      <label htmlFor={id} className="t-dato text-marina">
+    <div className="flex flex-col gap-2">
+      <label htmlFor={id} className="rotulo text-tinta-suave">
         {etiqueta}
         {obligatorio && (
           <>
@@ -43,13 +43,13 @@ export function CampoForm({
         )}
       </label>
       {ayuda && (
-        <p id={idAyuda} className="t-apoyo">
+        <p id={idAyuda} className="t-apoyo -mt-1 max-w-[45ch]">
           {ayuda}
         </p>
       )}
       {children({ id, "aria-describedby": describedBy, "aria-invalid": Boolean(error) })}
       {error && (
-        <p id={idError} role="alert" className="t-apoyo text-error">
+        <p id={idError} role="alert" className="t-apoyo max-w-[45ch] font-medium text-error">
           {error}
         </p>
       )}

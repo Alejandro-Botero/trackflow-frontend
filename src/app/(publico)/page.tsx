@@ -1,3 +1,4 @@
+import { Ayuda } from "@/components/Ayuda";
 import { BuscadorGuia } from "@/components/BuscadorGuia";
 import { EstadoBadge } from "@/components/EstadoBadge";
 import { ESTADOS } from "@/lib/estados";
@@ -15,31 +16,37 @@ const SIGNIFICADO: Record<EstadoEnvio, string> = {
 
 export default function PaginaInicio() {
   return (
-    <div className="flex flex-col gap-12">
+    <div className="flex flex-col gap-16">
       <section className="flex flex-col gap-8">
-        <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-2">
           <h1 className="t-display text-marina">Rastrea tu envío</h1>
-          <p className="t-apoyo max-w-prose">
-            Escribe el número de guía para ver el estado y el historial de movimientos del envío.
-          </p>
+          <Ayuda
+            etiqueta="Qué muestra la consulta"
+            texto="Con el número de la guía ves el estado actual y cada punto de control por el que pasó el paquete."
+            className="self-start sm:self-center"
+          />
         </div>
 
-        <div className="marco marco-hoja p-6 sm:p-8">
-          <BuscadorGuia ayuda="Formato: TF seguido de 12 dígitos, por ejemplo TF000000000001." />
+        <div className="hoja p-6 sm:p-8">
+          <BuscadorGuia />
         </div>
       </section>
 
-      <section aria-labelledby="etapas" className="flex flex-col gap-5">
-        <h2 id="etapas" className="t-seccion text-marina">
+      <section aria-labelledby="etapas" className="flex flex-col gap-6">
+        <h2 id="etapas" className="t-titulo text-marina">
           Las cinco etapas de un envío
         </h2>
-        <dl className="grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+
+        <dl className="flex flex-col border-t border-linea">
           {ESTADOS.map((estado) => (
-            <div key={estado.valor} className="flex flex-col gap-2 border-t border-linea pt-4">
-              <dt>
-                <EstadoBadge estado={estado.valor} />
+            <div
+              key={estado.valor}
+              className="flex flex-col gap-1 border-b border-linea py-4 sm:flex-row sm:items-baseline sm:gap-8"
+            >
+              <dt className="sm:w-64 sm:shrink-0">
+                <EstadoBadge estado={estado.valor} enmarcado={false} />
               </dt>
-              <dd className="t-apoyo max-w-[42ch]">{SIGNIFICADO[estado.valor]}</dd>
+              <dd className="max-w-[62ch] text-tinta-suave">{SIGNIFICADO[estado.valor]}</dd>
             </div>
           ))}
         </dl>

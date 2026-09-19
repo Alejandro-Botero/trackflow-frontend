@@ -28,13 +28,15 @@ export function Aviso({
   return (
     <div
       role={tono === "error" ? "alert" : "status"}
-      className={cn("flex gap-3 border border-linea border-l-4 p-4", borde, fondo)}
+      className={cn("flex gap-3 border border-linea border-l-4 p-4 sm:gap-4 sm:p-5", borde, fondo)}
     >
       <Icono className={cn("mt-0.5 h-5 w-5 shrink-0", texto)} aria-hidden="true" />
       <div className="flex-1">
         {titulo && <p className={cn("t-dato", texto)}>{titulo}</p>}
-        <div className="t-apoyo mt-1 text-tinta">{children}</div>
-        {accion && <div className="mt-3">{accion}</div>}
+        <div className={cn("text-sm text-tinta [&_p]:max-w-[60ch]", titulo && "mt-1.5")}>
+          {children}
+        </div>
+        {accion && <div className="mt-4">{accion}</div>}
       </div>
     </div>
   );

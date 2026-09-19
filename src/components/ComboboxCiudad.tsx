@@ -169,8 +169,8 @@ export function ComboboxCiudad({
   const idActivo = indiceActivo >= 0 ? `${idOpcionBase}-${indiceActivo}` : undefined;
 
   return (
-    <div className="flex flex-col gap-1">
-      <label htmlFor={id} className="t-dato text-marina">
+    <div className="flex flex-col gap-2">
+      <label htmlFor={id} className="rotulo text-tinta-suave">
         {etiqueta}
         {obligatorio && (
           <>
@@ -200,8 +200,9 @@ export function ComboboxCiudad({
             onFocus={() => texto.trim().length > 0 && setAbierto(true)}
             onKeyDown={alPresionarTecla}
             className={cn(
-              "min-h-11 w-full rounded-none border border-linea bg-hoja px-3 pr-10 text-base text-tinta",
-              "aria-invalid:border-error",
+              "min-h-12 w-full rounded-none border border-linea-control bg-hoja px-3.5 pr-10 text-base text-tinta",
+              "hover:border-marina",
+              "aria-invalid:border-error aria-invalid:bg-error-fondo",
             )}
           />
           {cargando ? (
@@ -220,16 +221,16 @@ export function ComboboxCiudad({
           <ul
             id={idLista}
             role="listbox"
-            className="marco marco-hoja absolute z-10 mt-1 max-h-60 w-full overflow-auto"
+            className="absolute z-10 mt-1 max-h-60 w-full overflow-auto border border-marina bg-hoja"
           >
-            {cargando && <li className="t-apoyo px-3 py-2">Buscando…</li>}
+            {cargando && <li className="t-apoyo px-3.5 py-3">Buscando…</li>}
             {!cargando && errorBusqueda && (
-              <li role="alert" className="px-3 py-2 text-sm text-error">
+              <li role="alert" className="px-3.5 py-3 text-sm text-error">
                 {errorBusqueda}
               </li>
             )}
             {!cargando && !errorBusqueda && opciones.length === 0 && (
-              <li className="t-apoyo px-3 py-2">Sin resultados</li>
+              <li className="t-apoyo px-3.5 py-3">Sin resultados</li>
             )}
             {!cargando &&
               !errorBusqueda &&
@@ -244,8 +245,8 @@ export function ComboboxCiudad({
                     seleccionar(ciudad);
                   }}
                   className={cn(
-                    "min-h-11 cursor-pointer px-3 py-2 text-base",
-                    indice === indiceActivo ? "bg-marina text-hoja" : "text-tinta",
+                    "flex min-h-11 cursor-pointer items-center border-b border-linea px-3.5 py-2 text-base last:border-b-0",
+                    indice === indiceActivo ? "bg-marina text-hoja" : "text-tinta hover:bg-papel",
                   )}
                 >
                   {ciudad.etiqueta}
@@ -255,7 +256,7 @@ export function ComboboxCiudad({
         )}
       </div>
       {error && (
-        <p id={idError} role="alert" className="t-apoyo text-error">
+        <p id={idError} role="alert" className="t-apoyo max-w-[45ch] font-medium text-error">
           {error}
         </p>
       )}

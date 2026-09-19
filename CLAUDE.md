@@ -48,11 +48,18 @@ Referencia: documento logístico impreso. Tokens en `src/app/globals.css` (no ha
 
 - Azul marino `--color-marina` para la estructura; naranja `--color-sello` para **un solo botón
   de acción por pantalla**; fondo `--color-papel`.
-- Esquinas rectas (`rounded-none`), marcos de línea fina con marcas de registro (clase `.marco`),
-  tarjetas sin relleno salvo `.marco-hoja`.
+- Esquinas rectas (`rounded-none`). La superficie es la **hoja de guía** (`.hoja`): papel con
+  fibra, filete y marcas de registro en las cuatro esquinas. Nada de tarjetas redondeadas.
 - Títulos en Barlow Condensed (`.t-display`, `.t-titulo`, `.t-seccion`, `.t-dato`), texto en
-  Barlow, 16 px base. Números de guía con la clase `.guia`.
-- Estados siempre con texto e ícono, nunca solo color.
+  Barlow, 16 px base. **Todo código va en IBM Plex Mono**: `.guia` (guías) y `.cifras` (fechas,
+  horas, totales). Las etiquetas de dato (`.rotulo`) son texto normal de 13 px, no versalitas.
+- Datos en casillas rotuladas (`.casilla`), historiales en tabla rayada (`.registro`), estado
+  actual estampado con `SelloEstado`, número de guía acompañado de `CodigoBarras`.
+- Estados siempre con texto e ícono, nunca solo color; el distintivo, el sello y el paso actual
+  del progreso comparten la misma tinta por estado.
+
+La guía de acabado y la pasada de revisión visual viven en `.claude/skills/ui-acabado/`
+(SKILL.md + `references/`): léela antes de crear o retocar una pantalla.
 
 ## Accesibilidad (WCAG 2.1 AA)
 

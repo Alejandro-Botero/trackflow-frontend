@@ -61,14 +61,14 @@ export function CopiarNumero({ valor }: { valor: string }) {
         : "";
 
   return (
-    <div className="inline-flex flex-wrap items-center gap-3">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
       <span ref={textoRef} className="guia text-lg text-marina">
         {valor}
       </span>
       <button
         type="button"
         onClick={copiar}
-        className="inline-flex min-h-11 min-w-11 items-center gap-2 border border-marina px-3 text-sm font-semibold text-marina"
+        className="inline-flex min-h-11 min-w-11 items-center gap-2 border border-marina px-3 text-sm font-semibold text-marina hover:bg-marina hover:text-hoja"
       >
         {estado === "copiado" ? (
           <Check className="h-4 w-4" aria-hidden="true" />

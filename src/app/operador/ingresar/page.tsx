@@ -75,13 +75,39 @@ function FormularioIngreso() {
   const puedeReintentar = error?.clase === "red" || error?.clase === "timeout";
 
   return (
-    <div className="flex min-h-[70vh] items-center justify-center p-6">
-      <div className="marco marco-hoja w-full max-w-md p-8 flex flex-col gap-6">
-        <div>
-          <h1 className="t-titulo">Ingreso de operador</h1>
-          <p className="t-apoyo mt-1">
-            Usa tu usuario y clave asignados. El sistema determina tu rol automáticamente.
+    <div className="mx-auto grid w-full max-w-[1200px] gap-12 px-4 py-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_26rem] lg:gap-20 lg:py-20">
+      <div className="flex flex-col gap-6 lg:pt-4">
+        <div className="flex items-center gap-3">
+          <span
+            aria-hidden="true"
+            className="flex h-9 w-9 items-center justify-center bg-marina text-hoja"
+          >
+            <span className="guia text-sm leading-none">TF</span>
+          </span>
+          <span className="t-seccion leading-none text-marina">TrackFlow</span>
+        </div>
+        <div className="flex flex-col gap-4">
+          <h1 className="t-display text-marina">Panel de operación</h1>
+          <p className="max-w-[46ch] text-lg text-tinta-suave">
+            Desde aquí se registran los envíos y los eventos de la cadena logística. La consulta
+            pública de guías no requiere sesión.
           </p>
+        </div>
+
+        <p>
+          <Link
+            href="/"
+            className="text-sm font-semibold text-marina underline decoration-linea-fuerte underline-offset-4 hover:decoration-marina"
+          >
+            Volver a rastrear un envío
+          </Link>
+        </p>
+      </div>
+
+      <div className="hoja flex h-fit flex-col gap-6 p-6 sm:p-8">
+        <div className="flex flex-col gap-2">
+          <h2 className="t-seccion text-marina">Ingreso de operador</h2>
+          <p className="t-apoyo max-w-[45ch]">Usa el usuario y la clave asignados.</p>
         </div>
 
         {error && (
@@ -100,16 +126,16 @@ function FormularioIngreso() {
               <p>{error.mensaje}</p>
               {error.clase === "noDisponible" && (
                 <p className="t-apoyo mt-1">
-                  Este entorno corre sin credenciales configuradas, así que no hay ningún
-                  usuario con el que entrar. Mientras siga así, el registro de envíos y
-                  eventos queda abierto sin token.
+                  Este entorno corre sin credenciales configuradas, así que no hay ningún usuario
+                  con el que entrar. Mientras siga así, el registro de envíos y eventos queda
+                  abierto sin token.
                 </p>
               )}
             </Aviso>
           </div>
         )}
 
-        <form onSubmit={manejarEnvio} noValidate className="flex flex-col gap-4">
+        <form onSubmit={manejarEnvio} noValidate className="flex flex-col gap-5">
           <CampoForm id="usuario" etiqueta="Usuario" obligatorio>
             {(campo) => (
               <Input
@@ -134,19 +160,10 @@ function FormularioIngreso() {
             )}
           </CampoForm>
 
-          <Boton type="submit" variante="accion" cargando={enviando}>
+          <Boton type="submit" variante="accion" cargando={enviando} className="mt-1">
             Ingresar
           </Boton>
         </form>
-
-        <p className="mt-6 border-t border-linea pt-4">
-          <Link
-            href="/"
-            className="t-apoyo font-medium text-marina underline-offset-4 hover:underline"
-          >
-            Volver a rastrear un envío
-          </Link>
-        </p>
       </div>
     </div>
   );

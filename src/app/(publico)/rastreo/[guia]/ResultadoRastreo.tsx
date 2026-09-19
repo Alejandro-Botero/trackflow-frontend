@@ -1,15 +1,16 @@
 "use client";
 
 // Carga estado e historial en paralelo y cubre los 5 estados de la consulta pública (HU-03).
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { consultarEstado, consultarHistorial } from "@/api/tracking";
 import type { ErrorApi } from "@/api/errores";
 import type { EstadoEnvioResponse, EventoLogisticoResponse } from "@/api/tipos";
 import { formatearFechaHora } from "@/lib/fechas";
-import { EstadoBadge } from "@/components/EstadoBadge";
+import { CodigoBarras } from "@/components/CodigoBarras";
 import { ProgresoEnvio } from "@/components/ProgresoEnvio";
+import { SelloEstado } from "@/components/SelloEstado";
 import { Timeline } from "@/components/Timeline";
 import { Boton } from "@/components/ui/Boton";
 import { Aviso } from "@/components/ui/Aviso";
@@ -17,6 +18,8 @@ import { Cargando } from "@/components/ui/Cargando";
 
 interface ResultadoRastreoProps {
   guia: string;
+  /** El número ya agrupado para leerlo en voz alta: "TF 0000 0000 0002". */
+  guiaAgrupada: string;
 }
 
 interface DatosEnvio {
@@ -24,7 +27,17 @@ interface DatosEnvio {
   eventos: EventoLogisticoResponse[];
 }
 
-export function ResultadoRastreo({ guia }: ResultadoRastreoProps) {
+/** Casilla rotulada del formato: nombre impreso arriba, dato mecanografiado debajo. */
+function Casilla({ rotulo, children }: { rotulo: string; children: ReactNode }) {
+  return (
+    <div className="casilla">
+      <dt className="rotulo">{rotulo}</dt>
+      <dd className="mt-1.5 font-medium text-tinta">{children}</dd>
+    </div>
+  );
+}
+
+export function ResultadoRastreo({ guia, guiaAgrupada }: ResultadoRastreoProps) {
   const router = useRouter();
   const [cargando, setCargando] = useState(true);
   const [datos, setDatos] = useState<DatosEnvio | null>(null);
@@ -54,102 +67,119 @@ export function ResultadoRastreo({ guia }: ResultadoRastreoProps) {
   }, [cargar]);
 
   return (
-    <div aria-live="polite" className="flex flex-col gap-6">
-      {cargando && (
-        <div className="marco marco-hoja flex flex-col items-center gap-3 p-10 text-center">
-          <Cargando texto="Consultando el envío…" tamano="lg" />
-          <p className="t-apoyo max-w-prose">
-            El servicio puede tardar hasta 25 segundos en responder si acaba de arrancar en frío.
-          </p>
+    <div className="flex flex-col gap-8">
+      {/* La hoja existe siempre: mientras carga o cuando falla, el membrete ya está impreso. */}
+      <section className="hoja" aria-labelledby="estado">
+        <div className="flex flex-col gap-6 border-b border-linea p-6 sm:flex-row sm:items-center sm:justify-between sm:gap-12 sm:p-8">
+          <h1 className="guia text-2xl font-semibold text-marina sm:text-3xl">{guiaAgrupada}</h1>
+          <CodigoBarras valor={guia} className="h-12 w-full text-marina sm:w-64" />
         </div>
-      )}
 
-      {!cargando && error && error.clase === "noEncontrado" && (
-        <Aviso tono="error" titulo="Envío no encontrado">
-          <p>No encontramos ningún envío con ese número. Verifica el número e inténtalo de nuevo.</p>
-          <p className="t-apoyo mt-2">
-            Número consultado: <span className="guia">{guia}</span>
-          </p>
-        </Aviso>
-      )}
+        <div aria-live="polite">
+          {cargando && (
+            <div className="flex flex-col gap-2 p-6 sm:p-8">
+              <Cargando texto="Consultando el envío…" tamano="lg" />
+              <p className="t-apoyo max-w-[45ch]">
+                El servicio puede tardar hasta 25 segundos en responder si acaba de arrancar en
+                frío.
+              </p>
+            </div>
+          )}
 
-      {!cargando && error && error.clase !== "noEncontrado" && (
-        <Aviso
-          tono="error"
-          titulo="No se pudo consultar el envío"
-          accion={
-            <Boton type="button" variante="contorno" onClick={cargar}>
-              Reintentar
-            </Boton>
-          }
-        >
-          {error.mensaje}
-        </Aviso>
-      )}
+          {!cargando && error && (
+            <div className="p-6 sm:p-8">
+              <Aviso
+                tono="error"
+                titulo={
+                  error.clase === "noEncontrado"
+                    ? "Envío no encontrado"
+                    : "No se pudo consultar el envío"
+                }
+                accion={
+                  error.clase === "noEncontrado" ? undefined : (
+                    <Boton type="button" variante="contorno" onClick={cargar}>
+                      Reintentar
+                    </Boton>
+                  )
+                }
+              >
+                {error.clase === "noEncontrado"
+                  ? "No hay ningún envío registrado con ese número. Verifica que sean las dos letras TF seguidas de 12 dígitos, sin espacios."
+                  : error.mensaje}
+              </Aviso>
+            </div>
+          )}
+
+          {!cargando && !error && datos && (
+            <>
+              <div className="flex flex-col gap-6 border-b border-linea p-6 sm:flex-row sm:items-center sm:justify-between sm:gap-10 sm:p-8">
+                <h2 id="estado" className="sr-only">
+                  Estado actual
+                </h2>
+                <SelloEstado estado={datos.estado.estado} />
+                {datos.estado.tieneMovimientos && (
+                  <div className="flex flex-col gap-1 border-t border-linea pt-4 sm:border-t-0 sm:pt-0 sm:text-right">
+                    <p className="rotulo">Último movimiento</p>
+                    <p className="cifras text-tinta">
+                      {datos.estado.ultimoMovimientoAt
+                        ? formatearFechaHora(datos.estado.ultimoMovimientoAt)
+                        : "Sin fecha"}
+                    </p>
+                    <p className="t-apoyo max-w-[34ch] sm:ml-auto">{datos.estado.ultimoPunto}</p>
+                  </div>
+                )}
+              </div>
+
+              <dl className="grid gap-px bg-linea sm:grid-cols-3">
+                <Casilla rotulo="Ciudad de destino">
+                  {datos.estado.ciudadDestino ?? "Sin definir"}
+                </Casilla>
+                <Casilla rotulo="Fecha de registro">
+                  <span className="cifras">{formatearFechaHora(datos.estado.registeredAt)}</span>
+                </Casilla>
+                <Casilla rotulo="Movimientos">
+                  <span className="cifras">{datos.eventos.length}</span>
+                </Casilla>
+              </dl>
+
+              <div className="border-t border-linea px-6 py-7 sm:px-8">
+                <ProgresoEnvio estado={datos.estado.estado} />
+              </div>
+            </>
+          )}
+        </div>
+
+      </section>
 
       {!cargando && !error && datos && (
         <>
-          <div className="marco marco-hoja flex flex-col gap-4 p-6 sm:p-8">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <p className="t-apoyo">Guía</p>
-                <p className="guia text-xl">{datos.estado.trackingNumber}</p>
-              </div>
-              <EstadoBadge estado={datos.estado.estado} tamano="lg" />
-            </div>
-
-            <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <dt className="t-apoyo">Ciudad de destino</dt>
-                <dd className="t-dato">{datos.estado.ciudadDestino ?? "Sin definir"}</dd>
-              </div>
-              <div>
-                <dt className="t-apoyo">Fecha de registro</dt>
-                <dd className="t-dato">{formatearFechaHora(datos.estado.registeredAt)}</dd>
-              </div>
-              {datos.estado.tieneMovimientos && (
-                <>
-                  <div>
-                    <dt className="t-apoyo">Último punto</dt>
-                    <dd className="t-dato">{datos.estado.ultimoPunto}</dd>
-                  </div>
-                  <div>
-                    <dt className="t-apoyo">Fecha del último movimiento</dt>
-                    <dd className="t-dato">
-                      {datos.estado.ultimoMovimientoAt
-                        ? formatearFechaHora(datos.estado.ultimoMovimientoAt)
-                        : "—"}
-                    </dd>
-                  </div>
-                </>
-              )}
-            </dl>
-
-            <ProgresoEnvio estado={datos.estado.estado} />
-          </div>
-
           {datos.estado.tieneMovimientos ? (
-            <div className="flex flex-col gap-3">
-              <h2 className="t-seccion text-marina">Historial de movimientos</h2>
+            <section aria-labelledby="historial" className="flex flex-col gap-5">
+              <h2 id="historial" className="t-titulo text-marina">
+                Movimientos
+              </h2>
               <Timeline eventos={datos.eventos} />
-            </div>
+            </section>
           ) : (
             <Aviso tono="info" titulo="Sin movimientos">
-              Aún no registra movimientos.
+              El envío ya tiene guía, pero todavía no pasa por ningún punto de control. Vuelve a
+              consultar más tarde.
             </Aviso>
           )}
 
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <Boton
               type="button"
               variante="marina"
-              onClick={() => router.push(`/operador/eventos/nuevo?guia=${datos.estado.trackingNumber}`)}
+              onClick={() =>
+                router.push(`/operador/eventos/nuevo?guia=${datos.estado.trackingNumber}`)
+              }
             >
               Reportar movimiento
             </Boton>
             <Link
               href="/"
-              className="t-apoyo font-medium text-marina underline-offset-4 hover:underline"
+              className="text-sm font-semibold text-marina underline decoration-linea-fuerte underline-offset-4 hover:decoration-marina"
             >
               Consultar otra guía
             </Link>

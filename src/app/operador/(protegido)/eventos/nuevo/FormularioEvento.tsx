@@ -193,13 +193,17 @@ export function FormularioEvento() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <Aviso tono="atencion">Los eventos no se pueden borrar ni editar.</Aviso>
-
-      <form onSubmit={buscar} noValidate className="marco marco-hoja p-6 flex flex-col gap-4">
-        <h2 className="t-seccion">Buscar envío</h2>
+    <div className="flex flex-col gap-8">
+      <form
+        onSubmit={buscar}
+        noValidate
+        className="hoja hoja-copia flex max-w-[46rem] flex-col gap-5 p-6 sm:p-8"
+      >
+        <div className="border-b border-linea pb-3">
+          <h2 className="t-seccion text-marina">Buscar envío</h2>
+        </div>
         <div className="flex flex-wrap items-end gap-4">
-          <div className="flex-1 min-w-48">
+          <div className="w-full min-w-48 sm:w-80">
             <CampoForm id="guia" etiqueta="Número de guía" obligatorio error={errorGuia}>
               {(campo) => (
                 <Input
@@ -207,6 +211,7 @@ export function FormularioEvento() {
                   value={guia}
                   onChange={(evento) => setGuia(evento.target.value)}
                   placeholder="TF000000000001"
+                  className="guia"
                 />
               )}
             </CampoForm>
@@ -225,30 +230,38 @@ export function FormularioEvento() {
 
       {ficha && !resultadoEvento && (
         <>
-          <div className="marco marco-hoja p-6 flex flex-col gap-3" aria-live="polite">
-            <h2 className="t-seccion">Envío encontrado</h2>
-            <p>
-              Guía: <span className="guia">{ficha.guia}</span>
-            </p>
-            <div className="flex items-center gap-3">
-              <span className="t-apoyo">Estado actual:</span>
+          <div
+            className="flex max-w-[46rem] flex-wrap items-start justify-between gap-x-8 gap-y-5 border-y border-linea py-5"
+            aria-live="polite"
+          >
+            <div className="flex flex-col gap-1">
+              <p className="rotulo">Envío encontrado</p>
+              <p className="guia t-dato text-marina">{ficha.guia}</p>
+            </div>
+            <div className="flex flex-col gap-2">
+              <p className="rotulo">Estado actual</p>
               <EstadoBadge estado={ficha.estado.estado} />
             </div>
-            <p className="t-apoyo">
-              {ficha.estado.ultimoPunto && ficha.estado.ultimoMovimientoAt
-                ? `Último movimiento: ${ficha.estado.ultimoPunto}, ${formatearFechaHora(
-                    ficha.estado.ultimoMovimientoAt,
-                  )}`
-                : "Aún no registra movimientos."}
-            </p>
+            <div className="flex flex-col gap-1">
+              <p className="rotulo">Último movimiento</p>
+              <p className="t-apoyo max-w-[36ch] text-tinta">
+                {ficha.estado.ultimoPunto && ficha.estado.ultimoMovimientoAt
+                  ? `${ficha.estado.ultimoPunto} · ${formatearFechaHora(
+                      ficha.estado.ultimoMovimientoAt,
+                    )}`
+                  : "Aún no registra movimientos."}
+              </p>
+            </div>
           </div>
 
           <form
             onSubmit={pedirConfirmacion}
             noValidate
-            className="marco marco-hoja p-6 flex flex-col gap-4"
+            className="hoja hoja-copia flex max-w-[46rem] flex-col gap-5 p-6 sm:p-8"
           >
-            <h2 className="t-seccion">Nuevo evento</h2>
+            <div className="border-b border-linea pb-3">
+              <h2 className="t-seccion text-marina">Nuevo evento</h2>
+            </div>
 
             <CampoForm id="tipo" etiqueta="Tipo de evento" obligatorio>
               {(campo) => (
@@ -326,21 +339,29 @@ export function FormularioEvento() {
               </div>
             )}
 
-            <div>
-              <Boton type="submit" variante="marina" cargando={enviando}>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-linea pt-5">
+              <Boton type="submit" variante="accion" cargando={enviando}>
                 Revisar y confirmar
               </Boton>
+              <p className="t-apoyo max-w-[45ch]">
+                Verás un resumen antes de registrarlo de forma definitiva.
+              </p>
             </div>
           </form>
         </>
       )}
 
       {resultadoEvento && ficha && (
-        <div className="marco marco-hoja p-6 flex flex-col gap-4" aria-live="polite">
-          <h2 className="t-seccion">Evento registrado</h2>
-          <div className="flex items-center gap-3">
-            <span className="t-apoyo">Estado actual:</span>
-            <EstadoBadge estado={ficha.estado.estado} />
+        <div className="hoja flex max-w-[46rem] flex-col gap-6 p-6 sm:p-8" aria-live="polite">
+          <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-4">
+            <div className="flex flex-col gap-1">
+              <p className="rotulo">Evento registrado en la guía</p>
+              <p className="guia t-titulo text-marina">{ficha.guia}</p>
+            </div>
+            <div className="flex flex-col gap-2 sm:items-end">
+              <p className="rotulo">Estado actual</p>
+              <EstadoBadge estado={ficha.estado.estado} tamano="lg" />
+            </div>
           </div>
 
           {sondeando && (
@@ -355,12 +376,14 @@ export function FormularioEvento() {
             </Aviso>
           )}
 
-          <div>
-            <h3 className="t-dato mb-2">Historial</h3>
+          <section aria-labelledby="historial-evento" className="flex flex-col gap-4">
+            <h3 id="historial-evento" className="rotulo">
+              Historial
+            </h3>
             <Timeline eventos={ficha.historial} />
-          </div>
+          </section>
 
-          <div>
+          <div className="border-t border-linea pt-6">
             <Boton variante="accion" onClick={registrarOtroEvento}>
               Registrar otro evento
             </Boton>
@@ -393,31 +416,33 @@ export function FormularioEvento() {
             </>
           }
         >
-          <dl className="flex flex-col gap-2">
-            <div>
-              <dt className="t-apoyo">Guía</dt>
-              <dd className="guia">{ficha.guia}</dd>
+          <dl className="flex flex-col border-b border-linea">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-t border-linea py-2.5">
+              <dt className="rotulo">Guía</dt>
+              <dd className="guia text-marina">{ficha.guia}</dd>
             </div>
-            <div>
-              <dt className="t-apoyo">Tipo de evento</dt>
-              <dd>{etiquetaTipoEvento(formulario.tipo)}</dd>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-t border-linea py-2.5">
+              <dt className="rotulo">Tipo de evento</dt>
+              <dd className="font-medium text-tinta">{etiquetaTipoEvento(formulario.tipo)}</dd>
             </div>
-            <div>
-              <dt className="t-apoyo">Punto</dt>
-              <dd>{formulario.punto}</dd>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-t border-linea py-2.5">
+              <dt className="rotulo">Punto</dt>
+              <dd className="font-medium text-tinta">{formulario.punto}</dd>
             </div>
             {formulario.observaciones.trim() && (
-              <div>
-                <dt className="t-apoyo">Observaciones</dt>
-                <dd>{formulario.observaciones}</dd>
+              <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-t border-linea py-2.5">
+                <dt className="rotulo">Observaciones</dt>
+                <dd className="max-w-[40ch] font-medium text-tinta">{formulario.observaciones}</dd>
               </div>
             )}
-            <div>
-              <dt className="t-apoyo">Fecha y hora</dt>
-              <dd>{formatearFechaHora(deLocalDateTimeInputAIso(formulario.ocurridoEn))}</dd>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-t border-linea py-2.5">
+              <dt className="rotulo">Fecha y hora</dt>
+              <dd className="cifras font-medium text-tinta">
+                {formatearFechaHora(deLocalDateTimeInputAIso(formulario.ocurridoEn))}
+              </dd>
             </div>
           </dl>
-          <p className="t-apoyo mt-3">
+          <p className="t-apoyo mt-4 max-w-[45ch]">
             Este evento no se podrá editar ni borrar una vez registrado.
           </p>
         </Dialogo>
