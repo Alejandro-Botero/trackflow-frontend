@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+/*
+  TrackFlow — sistema visual.
+  Referencia: documento logístico impreso (guía de envío): tinta azul marino sobre papel
+  grisáceo, un único sello naranja por pantalla, esquinas rectas, marcos de línea fina con
+  marcas de registro. Modo claro únicamente.
+*/
+
+:root {
+  --color-papel: #f2f2f3;
+  --color-hoja: #ffffff;
+  --color-marina: #14305c;
+  --color-marina-clara: #2f5b96;
+  --color-sello: #f4711a;
+  --color-sello-oscura: #c9560d;
+  --color-tinta: #101418;
+  --color-tinta-suave: #4b5563;
+  --color-linea: #c9ccd1;
+  --color-linea-fuerte: #9aa0a8;
+
+  /* Estados del envío: color + texto + ícono, nunca solo color. */
+  --color-estado-registrado: #5b6270;
+  --color-estado-centro: #14305c;
+  --color-estado-transito: #2f6fb5;
+  --color-estado-reparto: #b45309;
+  --color-estado-entregado: #1d6b45;
+
+  --color-error: #b3261e;
+  --color-error-fondo: #fdecea;
+}
+
+@theme inline {
+  --color-papel: var(--color-papel);
+  --color-hoja: var(--color-hoja);
+  --color-marina: var(--color-marina);
+  --color-marina-clara: var(--color-marina-clara);
+  --color-sello: var(--color-sello);
+  --color-sello-oscura: var(--color-sello-oscura);
+  --color-tinta: var(--color-tinta);
+  --color-tinta-suave: var(--color-tinta-suave);
+  --color-linea: var(--color-linea);
+  --color-linea-fuerte: var(--color-linea-fuerte);
+
+  --color-estado-registrado: var(--color-estado-registrado);
+  --color-estado-centro: var(--color-estado-centro);
+  --color-estado-transito: var(--color-estado-transito);
+  --color-estado-reparto: var(--color-estado-reparto);
+  --color-estado-entregado: var(--color-estado-entregado);
+
+  --color-error: var(--color-error);
+  --color-error-fondo: var(--color-error-fondo);
+
+  --font-titulo: var(--font-barlow-condensed), "Barlow Condensed", sans-serif;
+  --font-texto: var(--font-barlow), "Barlow", system-ui, sans-serif;
+
+  --radius-none: 0px;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-papel);
+  color: var(--color-tinta);
+  font-family: var(--font-texto);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-titulo);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: 0.005em;
+}
+
+/* Escala tipográfica: 16 base, razón ~1.33 en los títulos condensados. */
+.t-display {
+  font-family: var(--font-titulo);
+  font-size: clamp(2.75rem, 7vw, 4.5rem);
+  font-weight: 700;
+  line-height: 0.96;
+}
+.t-titulo {
+  font-family: var(--font-titulo);
+  font-size: clamp(1.75rem, 3.4vw, 2.375rem);
+  font-weight: 600;
+}
+.t-seccion {
+  font-family: var(--font-titulo);
+  font-size: 1.375rem;
+  font-weight: 600;
+}
+.t-dato {
+  font-family: var(--font-titulo);
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.t-apoyo {
+  font-size: 0.875rem;
+  color: var(--color-tinta-suave);
+}
+
+/* Número de guía: siempre tabular, para que se lea y se compare carácter a carácter. */
+.guia {
+  font-family: var(--font-titulo);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+/*
+  Marco de registro: la unidad de composición del sistema. Sin relleno, línea fina y
+  cuatro marcas en las esquinas, como una plancha de impresión de la guía.
+*/
+.marco {
+  position: relative;
+  border: 1px solid var(--color-linea);
+  background: transparent;
+}
+.marco::before,
+.marco::after {
+  content: "";
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--color-marina);
+  pointer-events: none;
+}
+.marco::before {
+  top: -1px;
+  left: -1px;
+  border-right: 0;
+  border-bottom: 0;
+}
+.marco::after {
+  bottom: -1px;
+  right: -1px;
+  border-left: 0;
+  border-top: 0;
+}
+.marco-hoja {
+  background: var(--color-hoja);
+}
+
+/* Foco visible en todo control interactivo (WCAG 2.1 AA). */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-sello);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
