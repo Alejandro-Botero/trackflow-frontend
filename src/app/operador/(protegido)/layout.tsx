@@ -7,6 +7,7 @@ import { LogOut } from "lucide-react";
 import { useSesion } from "@/auth/AuthContext";
 import { Cargando } from "@/components/ui/Cargando";
 import { Aviso } from "@/components/ui/Aviso";
+import { Logo } from "@/components/Logo";
 import { cn } from "@/lib/cn";
 
 const ENLACES = [
@@ -53,8 +54,8 @@ export default function LayoutProtegido({ children }: { children: ReactNode }) {
       {/* Banda de identificación: área interna, distinta del sitio público a primera vista. */}
       <div className="bg-marina text-hoja">
         <div className="mx-auto flex w-full max-w-[1200px] flex-wrap items-center justify-between gap-x-8 gap-y-3 px-4 py-3 sm:px-6">
-          <Link href="/operador/envios/nuevo" className="t-seccion leading-none">
-            TrackFlow
+          <Link href="/operador/envios/nuevo" className="inline-flex items-center">
+            <Logo tono="inverso" className="h-6" />
           </Link>
           <div className="flex items-center gap-5">
             <p className="text-sm">

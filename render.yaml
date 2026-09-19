@@ -12,5 +12,8 @@ services:
       # Se aplica durante el build: es la que decide contra qué backend consulta el sitio.
       - key: NEXT_PUBLIC_API_URL
         value: https://trackflow-5enb.onrender.com
+      # La usa Next para las URL absolutas de las imágenes de Open Graph.
+      - key: NEXT_PUBLIC_SITE_URL
+        value: https://trackflow-frontend.onrender.com
       - key: NODE_VERSION
         value: "22"

@@ -55,6 +55,9 @@ Referencia: documento logístico impreso. Tokens en `src/app/globals.css` (no ha
   horas, totales). Las etiquetas de dato (`.rotulo`) son texto normal de 13 px, no versalitas.
 - Datos en casillas rotuladas (`.casilla`), historiales en tabla rayada (`.registro`), estado
   actual estampado con `SelloEstado`, número de guía acompañado de `CodigoBarras`.
+- Logotipo: `<Logo />` (`src/components/Logo.tsx`), con `tono="inverso"` sobre la banda marina.
+  Los archivos están en `public/trackflow-logo*.png`; el ícono de la app (`src/app/icon.png`,
+  `apple-icon.png`, `favicon.ico`) es la "T" del logotipo en blanco sobre marina.
 - Estados siempre con texto e ícono, nunca solo color; el distintivo, el sello y el paso actual
   del progreso comparten la misma tinta por estado.
 

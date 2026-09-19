@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/Input";
 import { Aviso } from "@/components/ui/Aviso";
 import { Cargando } from "@/components/ui/Cargando";
 import { CampoForm } from "@/components/CampoForm";
+import { Logo } from "@/components/Logo";
 
 /** Solo permite redirigir dentro del área de operadores (evita redirecciones externas). */
 function destinoSeguro(destino: string | null): string {
@@ -77,15 +78,7 @@ function FormularioIngreso() {
   return (
     <div className="mx-auto grid w-full max-w-[1200px] gap-12 px-4 py-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_26rem] lg:gap-20 lg:py-20">
       <div className="flex flex-col gap-6 lg:pt-4">
-        <div className="flex items-center gap-3">
-          <span
-            aria-hidden="true"
-            className="flex h-9 w-9 items-center justify-center bg-marina text-hoja"
-          >
-            <span className="guia text-sm leading-none">TF</span>
-          </span>
-          <span className="t-seccion leading-none text-marina">TrackFlow</span>
-        </div>
+        <Logo className="h-9 self-start" />
         <div className="flex flex-col gap-4">
           <h1 className="t-display text-marina">Panel de operación</h1>
           <p className="max-w-[46ch] text-lg text-tinta-suave">

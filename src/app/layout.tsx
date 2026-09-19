@@ -25,7 +25,12 @@ const plexMono = IBM_Plex_Mono({
   display: "swap",
 });
 
+// URL pública del sitio: Next la necesita para resolver la imagen de Open Graph a una
+// dirección absoluta cuando alguien comparte un enlace.
+const SITIO = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITIO),
   title: { default: "TrackFlow · Rastreo de envíos", template: "%s · TrackFlow" },
   description: "Rastrea tu envío y registra su movimiento en la cadena logística.",
 };
