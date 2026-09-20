@@ -358,6 +358,7 @@ src/app/
   (publico)/layout.tsx           # cabecera pública + pie
   (publico)/page.tsx             # buscador de guía
   (publico)/rastreo/[guia]/page.tsx
+  operador/page.tsx                  # portada del área interna: elige destino y va al ingreso
   operador/ingresar/page.tsx
   operador/(protegido)/layout.tsx    # guarda de sesión + barra de operador
   operador/(protegido)/envios/nuevo/page.tsx

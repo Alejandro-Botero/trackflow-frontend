@@ -24,6 +24,7 @@ function FormularioIngreso() {
   const router = useRouter();
   const parametros = useSearchParams();
   const destino = destinoSeguro(parametros.get("destino"));
+  const vaAAdministracion = destino.startsWith("/operador/admin");
 
   const [usuario, setUsuario] = useState("");
   const [clave, setClave] = useState("");
@@ -100,7 +101,11 @@ function FormularioIngreso() {
       <div className="hoja flex h-fit flex-col gap-6 p-6 sm:p-8">
         <div className="flex flex-col gap-2">
           <h2 className="t-seccion text-marina">Ingreso de operador</h2>
-          <p className="t-apoyo max-w-[45ch]">Usa el usuario y la clave asignados.</p>
+          <p className="t-apoyo max-w-[45ch]">
+            {vaAAdministracion
+              ? "Usa el usuario y la clave asignados. La administración solo abre con rol ADMIN."
+              : "Usa el usuario y la clave asignados."}
+          </p>
         </div>
 
         {error && (
