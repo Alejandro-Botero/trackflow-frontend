@@ -1,17 +1,16 @@
 "use client";
 
-// Carga estado e historial en paralelo y cubre los 5 estados de la consulta pública (HU-03).
+// Consulta pública del estado actual (HU-03): cubre los 5 estados de la vista. El historial de
+// movimientos es HU-04, fuera del alcance de este sprint, y por eso aquí no se pide ni se pinta.
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { consultarEstado, consultarHistorial } from "@/api/tracking";
+import { consultarEstado } from "@/api/tracking";
 import type { ErrorApi } from "@/api/errores";
-import type { EstadoEnvioResponse, EventoLogisticoResponse } from "@/api/tipos";
+import type { EstadoEnvioResponse } from "@/api/tipos";
 import { formatearFechaHora } from "@/lib/fechas";
 import { CodigoBarras } from "@/components/CodigoBarras";
 import { ProgresoEnvio } from "@/components/ProgresoEnvio";
 import { SelloEstado } from "@/components/SelloEstado";
-import { Timeline } from "@/components/Timeline";
 import { Boton } from "@/components/ui/Boton";
 import { Aviso } from "@/components/ui/Aviso";
 import { Cargando } from "@/components/ui/Cargando";
@@ -20,11 +19,6 @@ interface ResultadoRastreoProps {
   guia: string;
   /** El número ya agrupado para leerlo en voz alta: "TF 0000 0000 0002". */
   guiaAgrupada: string;
-}
-
-interface DatosEnvio {
-  estado: EstadoEnvioResponse;
-  eventos: EventoLogisticoResponse[];
 }
 
 /** Casilla rotulada del formato: nombre impreso arriba, dato mecanografiado debajo. */
@@ -38,9 +32,8 @@ function Casilla({ rotulo, children }: { rotulo: string; children: ReactNode }) 
 }
 
 export function ResultadoRastreo({ guia, guiaAgrupada }: ResultadoRastreoProps) {
-  const router = useRouter();
   const [cargando, setCargando] = useState(true);
-  const [datos, setDatos] = useState<DatosEnvio | null>(null);
+  const [datos, setDatos] = useState<EstadoEnvioResponse | null>(null);
   const [error, setError] = useState<ErrorApi | null>(null);
 
   // La cadena arranca con una promesa ya resuelta para que los setState queden en un callback
@@ -50,10 +43,10 @@ export function ResultadoRastreo({ guia, guiaAgrupada }: ResultadoRastreoProps) 
       .then(() => {
         setCargando(true);
         setError(null);
-        return Promise.all([consultarEstado(guia), consultarHistorial(guia)]);
+        return consultarEstado(guia);
       })
-      .then(([estado, eventos]) => {
-        setDatos({ estado, eventos });
+      .then((estado) => {
+        setDatos(estado);
       })
       .catch((err: ErrorApi) => {
         setError(err);
@@ -116,34 +109,31 @@ export function ResultadoRastreo({ guia, guiaAgrupada }: ResultadoRastreoProps) 
                 <h2 id="estado" className="sr-only">
                   Estado actual
                 </h2>
-                <SelloEstado estado={datos.estado.estado} />
-                {datos.estado.tieneMovimientos && (
+                <SelloEstado estado={datos.estado} />
+                {datos.tieneMovimientos && (
                   <div className="flex flex-col gap-1 border-t border-linea pt-4 sm:border-t-0 sm:pt-0 sm:text-right">
                     <p className="rotulo">Último movimiento</p>
                     <p className="cifras text-tinta">
-                      {datos.estado.ultimoMovimientoAt
-                        ? formatearFechaHora(datos.estado.ultimoMovimientoAt)
+                      {datos.ultimoMovimientoAt
+                        ? formatearFechaHora(datos.ultimoMovimientoAt)
                         : "Sin fecha"}
                     </p>
-                    <p className="t-apoyo max-w-[34ch] sm:ml-auto">{datos.estado.ultimoPunto}</p>
+                    <p className="t-apoyo max-w-[34ch] sm:ml-auto">{datos.ultimoPunto}</p>
                   </div>
                 )}
               </div>
 
-              <dl className="grid gap-px bg-linea sm:grid-cols-3">
+              <dl className="grid gap-px bg-linea sm:grid-cols-2">
                 <Casilla rotulo="Ciudad de destino">
-                  {datos.estado.ciudadDestino ?? "Sin definir"}
+                  {datos.ciudadDestino ?? "Sin definir"}
                 </Casilla>
                 <Casilla rotulo="Fecha de registro">
-                  <span className="cifras">{formatearFechaHora(datos.estado.registeredAt)}</span>
-                </Casilla>
-                <Casilla rotulo="Movimientos">
-                  <span className="cifras">{datos.eventos.length}</span>
+                  <span className="cifras">{formatearFechaHora(datos.registeredAt)}</span>
                 </Casilla>
               </dl>
 
               <div className="border-t border-linea px-6 py-7 sm:px-8">
-                <ProgresoEnvio estado={datos.estado.estado} />
+                <ProgresoEnvio estado={datos.estado} />
               </div>
             </>
           )}
@@ -153,37 +143,21 @@ export function ResultadoRastreo({ guia, guiaAgrupada }: ResultadoRastreoProps) 
 
       {!cargando && !error && datos && (
         <>
-          {datos.estado.tieneMovimientos ? (
-            <section aria-labelledby="historial" className="flex flex-col gap-5">
-              <h2 id="historial" className="t-titulo text-marina">
-                Movimientos
-              </h2>
-              <Timeline eventos={datos.eventos} />
-            </section>
-          ) : (
+          {!datos.tieneMovimientos && (
             <Aviso tono="info" titulo="Sin movimientos">
               El envío ya tiene guía, pero todavía no pasa por ningún punto de control. Vuelve a
               consultar más tarde.
             </Aviso>
           )}
 
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-            <Boton
-              type="button"
-              variante="marina"
-              onClick={() =>
-                router.push(`/operador/eventos/nuevo?guia=${datos.estado.trackingNumber}`)
-              }
-            >
-              Reportar movimiento
-            </Boton>
+          <p>
             <Link
               href="/"
               className="text-sm font-semibold text-marina underline decoration-linea-fuerte underline-offset-4 hover:decoration-marina"
             >
               Consultar otra guía
             </Link>
-          </div>
+          </p>
         </>
       )}
     </div>

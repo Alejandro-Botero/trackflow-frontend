@@ -4,12 +4,11 @@
 import { useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import { registrarEvento } from "@/api/shipments";
-import { consultarEstado, consultarHistorial } from "@/api/tracking";
+import { consultarEstado } from "@/api/tracking";
 import { mensajeDeCampo, type ErrorApi } from "@/api/errores";
 import type {
   EstadoEnvioResponse,
   EventoAdmitidoResponse,
-  EventoLogisticoResponse,
   RegistrarEventoRequest,
   TipoEvento,
 } from "@/api/tipos";
@@ -26,12 +25,10 @@ import { Dialogo } from "@/components/ui/Dialogo";
 import { Cargando } from "@/components/ui/Cargando";
 import { CampoForm } from "@/components/CampoForm";
 import { EstadoBadge } from "@/components/EstadoBadge";
-import { Timeline } from "@/components/Timeline";
 
 interface FichaEnvio {
   guia: string;
   estado: EstadoEnvioResponse;
-  historial: EventoLogisticoResponse[];
 }
 
 interface DatosFormularioEvento {
@@ -100,11 +97,8 @@ export function FormularioEvento() {
     setBuscando(true);
     const guiaNormalizada = normalizarGuia(guia);
     try {
-      const [estado, historial] = await Promise.all([
-        consultarEstado(guiaNormalizada),
-        consultarHistorial(guiaNormalizada),
-      ]);
-      setFicha({ guia: guiaNormalizada, estado, historial });
+      const estado = await consultarEstado(guiaNormalizada);
+      setFicha({ guia: guiaNormalizada, estado });
       setFormulario(formularioVacio());
       setErroresCliente({});
       setErrorServidor(null);
@@ -157,20 +151,20 @@ export function FormularioEvento() {
     setEnviando(false);
     setResultadoEvento(respuesta);
     setSondeando(true);
-    const longitudPrevia = ficha.historial.length;
+    // El 202 solo dice que el evento se admitió: la proyección de lectura se confirma cuando
+    // cambia la marca del último movimiento (o el estado). Un evento con fecha anterior al
+    // último ya registrado no mueve ninguna de las dos, así que ahí el sondeo se agota y el
+    // aviso invita a consultar la guía en unos segundos.
+    const marcaPrevia = ficha.estado.ultimoMovimientoAt;
+    const estadoPrevio = ficha.estado.estado;
     try {
       const { valor, confirmado } = await sondear(
-        async () => {
-          const [estado, historial] = await Promise.all([
-            consultarEstado(ficha.guia),
-            consultarHistorial(ficha.guia),
-          ]);
-          return { estado, historial };
-        },
-        (datos) => datos.historial.length > longitudPrevia,
+        () => consultarEstado(ficha.guia),
+        (estado) =>
+          estado.ultimoMovimientoAt !== marcaPrevia || estado.estado !== estadoPrevio,
       );
       if (valor) {
-        setFicha({ guia: ficha.guia, estado: valor.estado, historial: valor.historial });
+        setFicha({ guia: ficha.guia, estado: valor });
       }
       setSondeoAgotado(!confirmado);
     } catch {
@@ -375,13 +369,6 @@ export function FormularioEvento() {
               Confirmado: el envío quedó en estado {etiquetaEstado(ficha.estado.estado)}.
             </Aviso>
           )}
-
-          <section aria-labelledby="historial-evento" className="flex flex-col gap-4">
-            <h3 id="historial-evento" className="rotulo">
-              Historial
-            </h3>
-            <Timeline eventos={ficha.historial} />
-          </section>
 
           <div className="border-t border-linea pt-6">
             <Boton variante="accion" onClick={registrarOtroEvento}>

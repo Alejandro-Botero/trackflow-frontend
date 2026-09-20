@@ -30,6 +30,11 @@ npm test           # vitest (validadores y normalizadores)
 El layout de `operador/(protegido)` lleva la guarda de sesión y de rol; `/operador/admin`
 exige rol `ADMIN`.
 
+Fuera de alcance: HU-04 (historial de movimientos) y los reportes HU-05/06/07. `Timeline.tsx` y
+`consultarHistorial` siguen en el repo porque el contrato los fija, pero ninguna pantalla los
+monta: la consulta pública muestra solo el estado actual y el último movimiento, que vienen de
+`GET /api/tracking/{tn}`.
+
 ## Contrato de API
 
 Ver `docs/contrato-ui.md` — es la fuente de verdad de tipos, firmas y textos. Reglas que no se

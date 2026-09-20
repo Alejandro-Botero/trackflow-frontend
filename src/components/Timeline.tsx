@@ -14,6 +14,9 @@ const ICONOS_EVENTO: Record<TipoEvento, LucideIcon> = {
 const UNA_HORA_MS = 60 * 60 * 1000;
 
 /**
+ * Pendiente de HU-04 (consultar el historial de movimientos): ninguna pantalla lo monta en este
+ * sprint, pero la firma está fijada en docs/contrato-ui.md §7 y se conserva para esa historia.
+ *
  * Libro de registro del envío: una fila por movimiento, ordenada por `ocurridoEn` ascendente,
  * con el número de asiento, la hora en cifras mono y el punto donde ocurrió. Es una tabla
  * porque eso es: un registro que se lee en columna y se compara fila con fila.
